@@ -2,6 +2,7 @@ package handler
 
 import "github.com/bwmarrin/discordgo"
 
+// MessageCreate creates message in condition
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages created by the bot itself

@@ -6,19 +6,40 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Excute/botchi-go/internal/discord"
 	"github.com/Excute/botchi-go/internal/handler"
 	"github.com/bwmarrin/discordgo"
 )
 
-func main() {
-	session := discord.Session
+var (
+	session *discordgo.Session
+)
 
+func init() {
+	setSession()
+
+	setIntents(
+		discordgo.IntentGuildMessages,
+	)
+}
+
+func setSession() {
+	s, err := discordgo.New("Bot " + os.Getenv("DISCORD_BOT_TOKEN"))
+	if err != nil {
+		panic(err)
+	}
+
+	session = s
+}
+
+func setIntents(intents ...discordgo.Intent) {
+	for _, intent := range intents {
+		session.Identify.Intents |= intent
+	}
+}
+
+func main() {
 	// Register the messageCreate func as a callback for MessageCreate events.
 	session.AddHandler(handler.MessageCreate)
-
-	// Only care about receiving message events.
-	session.Identify.Intents = discordgo.IntentGuildMessages
 
 	// Open a websocket connection to Discord and begin listening.
 	if err := session.Open(); err != nil {
