@@ -1,13 +1,17 @@
 package discord
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"os"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 var (
 	Session *discordgo.Session
 )
 
 func init() {
-	session, err := discordgo.New("Bot TOKEN")
+	session, err := discordgo.New("Bot " + os.Getenv("DISCORD_BOT_TOKEN"))
 	if err != nil {
 		panic(err)
 	}
