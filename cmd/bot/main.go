@@ -18,6 +18,7 @@ func init() {
 	setSession()
 
 	setIntents(
+		// TODO: Add intents needed
 		discordgo.IntentGuildMessages,
 	)
 }
@@ -38,8 +39,7 @@ func setIntents(intents ...discordgo.Intent) {
 }
 
 func main() {
-	// Register the messageCreate func as a callback for MessageCreate events.
-	session.AddHandler(handler.MessageCreate)
+	session.AddHandler(handler.HandlePingPong)
 
 	// Open a websocket connection to Discord and begin listening.
 	if err := session.Open(); err != nil {

@@ -2,11 +2,10 @@ package handler
 
 import "github.com/bwmarrin/discordgo"
 
-// MessageCreate creates message in condition
-func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+// HandlePingPong responses to ping and pong
+func HandlePingPong(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages created by the bot itself
-	// This isn't required in this specific example but it's a good practice.
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
