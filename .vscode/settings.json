@@ -1,0 +1,4 @@
+{
+  // golangci-lint: https://github.com/golangci/golangci-lint
+  "go.lintTool": "golangci-lint"
+}
