@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to heroku
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: akhileshns/heroku-deploy@v3.12.14 # Deploy to heroku: https://github.com/marketplace/actions/deploy-to-heroku
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY_EXCUTE}}
