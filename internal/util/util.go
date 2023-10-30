@@ -11,7 +11,7 @@ func MessageURL(guildID, channelID, messageID string) string {
 }
 
 // FormatKoreanTime formats time to time in Korea (UTC +09:00)
-func FormatKoreanTime(time time.Time) string {
+func FormatKoreanTime(_ time.Time) string {
 	// TODO: Implement
 	return ""
 }
