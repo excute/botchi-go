@@ -1,5 +1,0 @@
-package bot
-
-func main() {
-
-}
