@@ -1,6 +1,6 @@
 # Variables
 ## Container image tag
-tag = test-231031-03
+tag = test-231031-05
 
 .PHONY: lint build
 

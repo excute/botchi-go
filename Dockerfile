@@ -5,9 +5,7 @@ FROM golang:1.21.3-alpine3.18 AS build-stage
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-COPY cmd cmd
-COPY internal internal
+COPY . .
 
 RUN go mod download && go mod verify
 
