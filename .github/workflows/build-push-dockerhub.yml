@@ -15,12 +15,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -30,5 +29,5 @@ jobs:
             DISCORD_BOT_LOG_GUILD_ID=${{ vars.DISCORD_BOT_LOG_GUILD_ID }}
             DISCORD_BOT_LOG_CHANNEL_ID=${{ vars.DISCORD_BOT_LOG_CHANNEL_ID }}
 
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref_type }}-${{ github.ref_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/botchi-go:${{ github.ref_type }}-${{ github.ref_name }}
           push: true
