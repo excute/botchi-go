@@ -45,7 +45,7 @@
 #   Container Registry vs Artifact Registry   - https://cloud.google.com/blog/products/application-development/understanding-artifact-registry-vs-container-registry
 #   Principle of least privilege              - https://cloud.google.com/blog/products/identity-security/dont-get-pwned-practicing-the-principle-of-least-privilege
 
-name: Build and Deploy to Cloud Run
+name: Build and deploy to Cloud Run
 
 on: push
 
@@ -55,8 +55,6 @@ env:
   REPOSITORY: botchi/botchi-go
   SERVICE: botchi-go
   REGION: asia-northeast3
-  GOOGLE_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
-  GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
 
 jobs:
   build_and_push:
@@ -70,14 +68,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Google Auth
-        id: auth
+        id: google-auth
         uses: "google-github-actions/auth@v1"
         with:
           token_format: "access_token"
-          workload_identity_provider: "${{ env.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}" # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
-          service_account: "${{ env.GOOGLE_SERVICE_ACCOUNT }}" # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-
+          workload_identity_provider: "${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}" # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+          service_account: "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
       # NOTE: Alternative option - authentication via credentials json
       # - name: Google Auth
@@ -90,13 +90,13 @@ jobs:
       # BEGIN - Docker auth and build (NOTE: If you already have a container image, these Docker steps can be omitted)
 
       # Authenticate Docker to Google Cloud Artifact Registry
-      # - name: Docker Auth
-      #   id: docker-auth
-      #   uses: "docker/login-action@v3"
-      #   with:
-      #     username: "oauth2accesstoken"
-      #     password: "${{ steps.auth.outputs.access_token }}"
-      #     registry: "${{ env.GAR_LOCATION }}-docker.pkg.dev"
+      - name: Docker Auth
+        id: docker-auth
+        uses: "docker/login-action@v3"
+        with:
+          username: "oauth2accesstoken"
+          password: "${{ steps.google-auth.outputs.access_token }}"
+          registry: "${{ env.GAR_LOCATION }}-docker.pkg.dev"
 
       # NOTE: Alternative option - authentication via credentials json
       # - name: Docker Auth
@@ -129,4 +129,4 @@ jobs:
 
       # If required, use the Cloud Run url output in later steps
       # - name: Show Output
-      #   run: echo ${{ steps.deploy.outputs.url }}
+      #   run: echo ${{ steps.build_and_push.outputs.url }}
