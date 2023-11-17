@@ -108,10 +108,10 @@ jobs:
           zone: asia-northeast3-a
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           command: |-
-            docker pull $IMAGE_TAG
-            docker stop $(docker ps -aq)
-            docker run $IMAGE_TAG
-            docker image prune -a
+            docker pull $IMAGE_TAG \
+            && docker stop $(docker ps -aq) \
+            && docker run $IMAGE_TAG \
+            && docker image prune -a
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
