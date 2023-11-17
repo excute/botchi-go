@@ -57,8 +57,8 @@ jobs:
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           user: ${{ secrets.GCP_SSH_USER }}
           command: |
-            echo $(whoami)
-            echo $(pwd)
+            echo $(docker images)
+            echo $(ip a)
 
       - name: Show Output
         run: |-
