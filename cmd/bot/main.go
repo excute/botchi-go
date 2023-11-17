@@ -14,6 +14,10 @@ import (
 	"github.com/Excute/botchi-go/internal/logger"
 )
 
+var (
+	registeredCommands []*discordgo.ApplicationCommand
+)
+
 func setIntents(session *discordgo.Session) {
 	// TODO: Add intents needed
 	session.Identify.Intents |= discordgo.IntentGuildMessages
@@ -46,6 +50,13 @@ func main() {
 		log.Fatalf("Cannot create discord session: %+v", err)
 	}
 
+	fmt.Println("Bot is now online. Press CTRL-C to exit.")
+
+	defer func() {
+		// Cleanly close down the Discord session.
+		session.Close()
+	}()
+
 	// session.ChannelMessageSend("531633010433458178")
 
 	// Set intents needed
@@ -59,18 +70,28 @@ func main() {
 		log.Fatalf("Cannot connect to Discord websocket: %+v", err)
 	}
 
-	if _, err := registerCommands(session); err != nil {
-		logger.Panic(session, err, nil)
+	// Register commands
+	if registeredCommands, err = registerCommands(session); err != nil {
+		logger.Error(session, err, nil)
 	}
 
-	// Cleanly close down the Discord session.
 	defer func() {
-		// Wait here until CTRL-C or other term signal is received.
-		fmt.Println("Bot is now online. Press CTRL-C to exit.")
-		stopChannel := make(chan os.Signal, 1)
-		signal.Notify(stopChannel, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-		<-stopChannel
+		// Deregister commands
+		// TODO: log
+		for _, registeredCommand := range registeredCommands {
+			if err := session.ApplicationCommandDelete(session.State.User.ID, "", registeredCommand.ID); err != nil {
+				logger.Error(session, err, nil)
+			}
+		}
 
+		// Closes the bot session
 		session.Close()
 	}()
+
+	stopChannel := make(chan os.Signal, 1)
+	signal.Notify(stopChannel, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	<-stopChannel
+
+	// Got stop signal, closing process
+	// TODO: log
 }
