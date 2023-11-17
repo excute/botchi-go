@@ -57,10 +57,7 @@ jobs:
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           user: oys
           command: |-
-            "docker pull ${{ env.IMAGE_TAG }} \
-            && docker stop $(docker ps -aq) \
-            && docker run ${{ env.IMAGE_TAG }} \
-            && docker image prune -a"
+            bash /home/oys/deploy-docker.sh ${{ env.IMAGE_TAG }}
 
       - name: Show Output
         run: |-
