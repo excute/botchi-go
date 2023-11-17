@@ -60,7 +60,7 @@ jobs:
             docker pull ${{ env.IMAGE_TAG }}
             if $(docker ps -aq); then
             docker stop $(docker ps -aq); fi
-            docker run --rm ${{ env.IMAGE_TAG }}
+            docker run -d --rm ${{ env.IMAGE_TAG }}
             docker image prune -af
 
       - name: Show Output
