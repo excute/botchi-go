@@ -1,14 +1,12 @@
 name: CI/CD
 
-on: push
+on:
+  push:
+    tags:
+      - "[0-9]*"
 
 env:
-  GOOGLE_PROJECT_ID: botchi
-  # GAR_LOCATION: asia-northeast3-docker.pkg.dev
-  # REPOSITORY: botchi/botchi-go
-  # SERVICE: botchi-go
-  GOOGLE_REGION: asia-northeast3
-  IMAGE_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.APP_NAME }}:${{ github.ref_type }}-${{ github.ref_name }}
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.APP_NAME }}:${{ github.ref_name }}
 
 jobs:
   cicd:
@@ -45,22 +43,24 @@ jobs:
             DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}
             DISCORD_BOT_LOG_GUILD_ID=${{ vars.DISCORD_BOT_LOG_GUILD_ID }}
             DISCORD_BOT_LOG_CHANNEL_ID=${{ vars.DISCORD_BOT_LOG_CHANNEL_ID }}
-          tags: ${{ env.IMAGE_TAG }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            ${{ env.IMAGE_NAME }}:latest
           push: true
 
       - name: Deploy to Compute engine
         id: deploy
         uses: google-github-actions/ssh-compute@v0
         with:
-          instance_name: container-runner-main
-          zone: asia-northeast3-a
+          instance_name: ${{ vars.GCP_INSTANCE_NAME }}
+          zone: ${{ vars.GCP_ZONE }}
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           user: ${{ secrets.GCP_SSH_USER }}
           command: |
-            docker pull ${{ env.IMAGE_TAG }}
+            docker pull ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             if $(docker ps -aq); then
             docker stop $(docker ps -aq); fi
-            docker run -d --rm ${{ env.IMAGE_TAG }}
+            docker run -d --rm ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             docker image prune -af
 
       - name: Show Output
