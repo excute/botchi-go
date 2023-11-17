@@ -65,5 +65,5 @@ jobs:
 
       - name: Show Output
         run: |-
-          echo ${{ steps.deploy.stdout }}
-          echo ${{ steps.deploy.stderr }}
+          echo ${{ steps.deploy.outputs.stdout }}
+          echo ${{ steps.deploy.outputs.stderr }}
