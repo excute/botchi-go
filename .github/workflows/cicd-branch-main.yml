@@ -106,7 +106,7 @@ jobs:
           zone: asia-northeast3-a
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           command: |-
-            "docker pull $IMAGE_TAG \
+            "docker pull ${{ env.IMAGE_TAG }} \
             && docker stop $(docker ps -aq) \
             && docker run ${{ env.IMAGE_TAG }} \
             && docker image prune -a"
