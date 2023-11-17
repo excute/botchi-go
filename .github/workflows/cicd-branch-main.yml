@@ -56,10 +56,10 @@ jobs:
           zone: asia-northeast3-a
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
           user: oys
-          command: 'docker pull ${{ env.IMAGE_TAG }} \
-            && docker stop $(docker ps -aq) \
-            && docker run --rm ${{ env.IMAGE_TAG }} \
-            && docker image prune -af'
+          command: "docker pull ${{ env.IMAGE_TAG }}
+            && docker stop $(docker ps -aq)
+            && docker run --rm ${{ env.IMAGE_TAG }}
+            && docker image prune -af"
 
       - name: Show Output
         run: |-
