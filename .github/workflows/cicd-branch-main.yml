@@ -101,8 +101,6 @@ jobs:
       - name: Deploy to Compute engine
         id: deploy
         uses: google-github-actions/ssh-compute@v0
-        env:
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
         with:
           instance_name: container-runner-main
           zone: asia-northeast3-a
@@ -110,7 +108,7 @@ jobs:
           command: |-
             "docker pull $IMAGE_TAG \
             && docker stop $(docker ps -aq) \
-            && docker run $(IMAGE_TAG) \
+            && docker run ${{ env.IMAGE_TAG }} \
             && docker image prune -a"
 
       # If required, use the Cloud Run url output in later steps
