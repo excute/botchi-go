@@ -58,7 +58,7 @@ jobs:
           user: ${{ secrets.GCP_SSH_USER }}
           command: |
             docker pull ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-            if $(docker ps -aq); then
+            if [ $(docker ps -aq) != "" ]; then
             docker stop $(docker ps -aq); fi
             docker run -d --rm ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             docker image prune -af
