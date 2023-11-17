@@ -107,7 +107,7 @@ jobs:
           instance_name: container-runner-main
           zone: asia-northeast3-a
           ssh_private_key: "${{ secrets.GCP_SSH_PRIVATE_KEY }}"
-          command: \-
+          command: |-
             bash /home/oys/deploy-docker.sh ${IMAGE_TAG}
 
       # If required, use the Cloud Run url output in later steps
