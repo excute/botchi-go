@@ -3,9 +3,23 @@ package handler
 import (
 	"log"
 
+	"github.com/Excute/botchi-go/internal/command"
 	"github.com/Excute/botchi-go/internal/logger"
 	"github.com/bwmarrin/discordgo"
 )
+
+func Handlers() []interface{} {
+	return []interface{}{
+		// List of handlers
+		command.Handler,
+	}
+}
+
+// return []func(){
+// 	command.Handler,
+// 	HandlePingPong,
+// }
+// return nil
 
 // HandlePingPong responses to ping and pong
 func HandlePingPong(s *discordgo.Session, m *discordgo.MessageCreate) {

@@ -23,11 +23,6 @@ func setIntents(session *discordgo.Session) {
 	session.Identify.Intents |= discordgo.IntentGuildMessages
 }
 
-func addHandlers(session *discordgo.Session) {
-	session.AddHandler(handler.HandlePingPong)
-	session.AddHandler(command.Handler)
-}
-
 func registerCommands(session *discordgo.Session) (registeredCommands []*discordgo.ApplicationCommand, err error) {
 	commands := command.Commands()
 	registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
@@ -63,7 +58,10 @@ func main() {
 	setIntents(session)
 
 	// Set handlers to session
-	addHandlers(session)
+	// addHandlers(session)
+	for _, handler := range handler.Handlers() {
+		session.AddHandler(handler)
+	}
 
 	// Open a websocket connection to Discord and begin listening.
 	if err := session.Open(); err != nil {
