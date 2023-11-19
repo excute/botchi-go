@@ -11,31 +11,11 @@ import (
 
 	"github.com/Excute/botchi-go/internal/command"
 	"github.com/Excute/botchi-go/internal/handler"
-	"github.com/Excute/botchi-go/internal/logger"
-)
-
-var (
-	registeredCommands []*discordgo.ApplicationCommand
 )
 
 func setIntents(session *discordgo.Session) {
 	// TODO: Add intents needed
 	session.Identify.Intents |= discordgo.IntentGuildMessages
-}
-
-func registerCommands(session *discordgo.Session) (registeredCommands []*discordgo.ApplicationCommand, err error) {
-	commands := command.Commands()
-	registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
-
-	for i, command := range commands {
-		registeredCommand, err := session.ApplicationCommandCreate(session.State.User.ID, "", command)
-		if err != nil {
-			return nil, err
-		}
-		registeredCommands[i] = registeredCommand
-	}
-
-	return registeredCommands, nil
 }
 
 func main() {
@@ -45,6 +25,7 @@ func main() {
 		log.Fatalf("Cannot create discord session: %+v", err)
 	}
 
+	// TODO: use logger instead
 	fmt.Println("Bot is now online. Press CTRL-C to exit.")
 
 	defer func() {
@@ -52,39 +33,21 @@ func main() {
 		session.Close()
 	}()
 
-	// session.ChannelMessageSend("531633010433458178")
-
 	// Set intents needed
 	setIntents(session)
 
 	// Set handlers to session
-	// addHandlers(session)
-	for _, handler := range handler.Handlers() {
-		session.AddHandler(handler)
-	}
+	command.Add(session)
+	handler.Add(session)
 
 	// Open a websocket connection to Discord and begin listening.
 	if err := session.Open(); err != nil {
 		log.Fatalf("Cannot connect to Discord websocket: %+v", err)
 	}
 
-	// Register commands
-	if registeredCommands, err = registerCommands(session); err != nil {
-		logger.Error(session, err, nil)
-	}
-
-	defer func() {
-		// Deregister commands
-		// TODO: log
-		for _, registeredCommand := range registeredCommands {
-			if err := session.ApplicationCommandDelete(session.State.User.ID, "", registeredCommand.ID); err != nil {
-				logger.Error(session, err, nil)
-			}
-		}
-
-		// Closes the bot session
-		session.Close()
-	}()
+	// Register commands, deregister before session closing
+	command.Register(session)
+	defer command.Deregister(session)
 
 	stopChannel := make(chan os.Signal, 1)
 	signal.Notify(stopChannel, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)

@@ -7,37 +7,42 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var cmdFirst *discordgo.ApplicationCommand = &discordgo.ApplicationCommand{
-	Name: "first",
-	NameLocalizations: &map[discordgo.Locale]string{
-		discordgo.Korean: "첫-커맨드",
+var first = &genericCommand{
+	handler: handleFirst,
+	applicationCommand: &discordgo.ApplicationCommand{
+		Name: "first",
+		NameLocalizations: &map[discordgo.Locale]string{
+			discordgo.Korean: "첫-커맨드",
+		},
+
+		Description: "Description of command",
+		DescriptionLocalizations: &map[discordgo.Locale]string{
+			discordgo.Korean: "커맨드 설명",
+		},
+
+		// TODO: Implement
+
+		// Type: discordgo.ApplicationCommandType(discordgo.ApplicationCommandOptionString),
+
+		// Options: []*discordgo.ApplicationCommandOption{
+		// 	{
+		// 		Name: "option-name",
+		// 		NameLocalizations: map[discordgo.Locale]string{
+		// 			discordgo.Korean: "옵션-이름",
+		// 		},
+
+		// 		Description: "Description of option",
+		// 		DescriptionLocalizations: map[discordgo.Locale]string{
+		// 			discordgo.Korean: "옵션 설명",
+		// 		},
+		// 	},
+		// },
 	},
-
-	Description: "Description of command",
-	DescriptionLocalizations: &map[discordgo.Locale]string{
-		discordgo.Korean: "커맨드 설명",
-	},
-
-	// TODO: Implement
-
-	// Type: discordgo.ApplicationCommandType(discordgo.ApplicationCommandOptionString),
-
-	// Options: []*discordgo.ApplicationCommandOption{
-	// 	{
-	// 		Name: "option-name",
-	// 		NameLocalizations: map[discordgo.Locale]string{
-	// 			discordgo.Korean: "옵션-이름",
-	// 		},
-
-	// 		Description: "Description of option",
-	// 		DescriptionLocalizations: map[discordgo.Locale]string{
-	// 			discordgo.Korean: "옵션 설명",
-	// 		},
-	// 	},
-	// },
 }
 
-func cmdFirstHandler(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
+// var cmdFirst *discordgo.ApplicationCommand =
+
+func handleFirst(session *discordgo.Session, interaction *discordgo.InteractionCreate) {
 	logger.Debug(session, "cmdFirstHandler() called", interaction.Interaction)
 
 	if err := session.InteractionRespond(
@@ -51,9 +56,4 @@ func cmdFirstHandler(session *discordgo.Session, interaction *discordgo.Interact
 	); err != nil {
 		log.Panic(err)
 	}
-}
-
-func setFirst() {
-	commands = append(commands, cmdFirst)
-	handlers[cmdFirst.Name] = cmdFirstHandler
 }
